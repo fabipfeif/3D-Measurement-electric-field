@@ -4,6 +4,7 @@ from scipy import signal
 from scipy.signal import hilbert
 from mpl_toolkits.mplot3d import Axes3D
 from progress.bar import Bar
+import itertools
 sampleRate = 1000000 #1MS/s
 
 
@@ -19,7 +20,6 @@ def map_data(data):
 
     aps_probe = 180/steps_probe
     aps_plate = 180/steps_plate
-    print(aps_plate, aps_probe)
     phi = []
     theta = []
 
@@ -53,8 +53,17 @@ def map_data(data):
         z_global.append(r*np.cos(np.deg2rad(theta_global[a])))
 
     ### calculating the rotated vectors ###
-    field_vecs_global = np.zeros([2]) #create empty array with dimension 2
-    initial_vector = np.array([1,1,0])
+    
+    u_global = []
+    v_global = []
+    w_global = []
+
+    u_global_2 = []
+    v_global_2 = []
+    w_global_2 = []
+
+    initial_vector_1 = np.array([1,0,0])
+    initial_vector_2 = np.array([0,1,0])
 
     for i in range(0, len(phi_global)): # first turn every vector around x axis, then around z
         phi = np.deg2rad(phi_global[i])
@@ -68,10 +77,21 @@ def map_data(data):
                           [np.sin(theta), np.cos(theta), 0],
                           [0, 0, 1]]) 
         
-        turned_vector =  np.matmul(initial_vector, turn_x)
-        turned_vector =  np.matmul(turned_vector, turn_z)
+        turned_vector_1 =  np.matmul(initial_vector_1, turn_x)
+        turned_vector_1 =  np.matmul(turned_vector_1, turn_z)
 
-        np.concatenate(field_vecs_global,initial_vector)
+        u_global.append(turned_vector_1[0])
+        v_global.append(turned_vector_1[1])
+        w_global.append(turned_vector_1[2])
+
+        turned_vector_2 =  np.matmul(initial_vector_2, turn_x)
+        turned_vector_2 =  np.matmul(turned_vector_2, turn_z)
+
+        u_global_2.append(turned_vector_1[0])
+        v_global_2.append(turned_vector_1[1])
+        w_global_2.append(turned_vector_1[2])
+
+        
     #######################################
 
     #here is where the reading from the numpy file starts  
@@ -94,10 +114,16 @@ def map_data(data):
         bar.next()
     bar.finish()
 
+
+    #plot the stupid thing
+
     fig=plt.figure()
     ax = plt.axes(projection='3d')
-    p = ax.scatter3D(x_global, y_global, z_global, c=field_amp_global, cmap='coolwarm');
-    fig.colorbar(p)
+    #p = ax.scatter3D(x_global, y_global, z_global, c=field_amp_global, cmap='coolwarm');
+
+    ax.quiver(x_global, y_global, z_global, u_global, v_global, w_global, length=10, normalize=True);
+    #ax.quiver(x_global, y_global, z_global, u_global_2, v_global_2, w_global_2, length=10, normalize=True);
+    #fig.colorbar(p)
 
     plt.show()
 
