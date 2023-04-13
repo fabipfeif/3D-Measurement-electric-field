@@ -93,5 +93,4 @@ def filter_data(sample):
     filteredBandPass = signal.filtfilt(b, a, sample)
     hilbert_transformed = hilbert(filteredBandPass)
 
-
     return  np.asarray(np.abs(hilbert_transformed))

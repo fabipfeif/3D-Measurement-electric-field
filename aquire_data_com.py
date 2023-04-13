@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import serial
 from progress.bar import Bar
 from datetime import datetime
-from analysis import map_data, filter_data
+from analysis_2D_Vector import map_data, filter_data
 
 scanner = serial.Serial('COM10',9600)
 

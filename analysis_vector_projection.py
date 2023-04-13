@@ -52,51 +52,14 @@ def map_data(data):
         y_global.append(r*np.sin(np.deg2rad(theta_global[a]))*np.sin(np.deg2rad(phi_global[a])))
         z_global.append(r*np.cos(np.deg2rad(theta_global[a])))
 
-    ### calculating the rotated vectors ###
     
-    u_global = []
-    v_global = []
-    w_global = []
-
-    u_global_2 = []
-    v_global_2 = []
-    w_global_2 = []
-
-    initial_vector_1 = np.array([1,0,0])
-    initial_vector_2 = np.array([0,1,0])
-
-    for i in range(0, len(phi_global)): # first turn every vector around x axis, then around z
-        phi = np.deg2rad(phi_global[i])
-        theta = np.deg2rad(theta_global[i])
-        
-        turn_x = np.array([[1, 0, 0],
-                          [0, np.cos(phi), -np.sin(phi)],
-                          [0, np.sin(phi), np.cos(phi)]]) 
-
-        turn_z = np.array([[np.cos(theta), -np.sin(theta), 0],
-                          [np.sin(theta), np.cos(theta), 0],
-                          [0, 0, 1]]) 
-        
-        turned_vector_1 =  np.matmul(initial_vector_1, turn_x)
-        turned_vector_1 =  np.matmul(turned_vector_1, turn_z)
-
-        u_global.append(turned_vector_1[0])
-        v_global.append(turned_vector_1[1])
-        w_global.append(turned_vector_1[2])
-
-        turned_vector_2 =  np.matmul(initial_vector_2, turn_x)
-        turned_vector_2 =  np.matmul(turned_vector_2, turn_z)
-
-        u_global_2.append(turned_vector_1[0])
-        v_global_2.append(turned_vector_1[1])
-        w_global_2.append(turned_vector_1[2])
-
         
     #######################################
 
     #here is where the reading from the numpy file starts  
 
     field_amp_global = []
+    efield_spherical = []
 
     bar = Bar('Plotting electric field', max=len(data)-1,fill='#',suffix='%(percent)d%% - %(eta)ds' ' to go' )
 
@@ -109,21 +72,55 @@ def map_data(data):
             amp = np.average(fltr) #avergae of hilber-tranformation
             pos[channels] = amp
 
-        field_amp = np.sqrt(np.square(pos[0])+np.square(pos[1]))
+        efield_spherical.append(pos)
+
+        #field_amp = np.sqrt(np.square(pos[0])+np.square(pos[1]))
+        field_amp = pos[1]
         field_amp_global.append(field_amp)
         bar.next()
     bar.finish()
+
+    ### calculating the rotated vectors ###
+    
+    u_global = []
+    v_global = []
+    w_global = []
+
+
+    theta_hat = np.array([0,1,0])
+    phi_hat = np.array([0,0,1])
+
+    for i in range(0, len(phi_global)):
+        phi = np.deg2rad(phi_global[i]) #plate rotation angle
+        theta = np.deg2rad(theta_global[i]) #probe rotation angle
+        
+        rotation_matrix =np.array([[np.sin(theta)*np.cos(phi), np.cos(theta)*np.cos(phi), -np.sin(phi)],
+                                  [np.sin(theta)*np.sin(phi), np.cos(theta)*np.sin(phi), np.cos(phi)],
+                                  [np.cos(theta), -np.sin(theta), 0]])
+        
+        efield_spherical_vec = np.array([0, efield_spherical[i][1], efield_spherical[i][0]])
+
+        proj_vec = np.matmul(rotation_matrix, efield_spherical_vec)
+
+        u_global.append(proj_vec[0])
+        v_global.append(proj_vec[1])
+        w_global.append(proj_vec[2])
 
 
     #plot the stupid thing
 
     fig=plt.figure()
-    ax = plt.axes(projection='3d')
-    #p = ax.scatter3D(x_global, y_global, z_global, c=field_amp_global, cmap='coolwarm');
+    plt.axes(projection='3d')
 
-    ax.quiver(x_global, y_global, z_global, u_global, v_global, w_global, length=10, normalize=True);
-    #ax.quiver(x_global, y_global, z_global, u_global_2, v_global_2, w_global_2, length=10, normalize=True);
-    #fig.colorbar(p)
+    NUM = len(x_global)//2
+    SCALE=3
+
+    # mapped_color = [255/max(field_amp_global)* field_amp_global[i] for i in range(0, len(field_amp_global))]
+
+    plt.quiver(x_global[0:NUM], y_global[0:NUM], z_global[0:NUM], u_global[0:NUM], v_global[0:NUM], w_global[0:NUM], length=SCALE)
+    plt.xlim([-40,40])
+    plt.xlabel('x')
+    plt.ylabel('y')
 
     plt.show()
 
