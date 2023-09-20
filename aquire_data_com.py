@@ -10,9 +10,9 @@ import matplotlib.pyplot as plt
 import serial
 from progress.bar import Bar
 from datetime import datetime
-from analysis_2D_Vector import map_data, filter_data
+from analysis import map_data, filter_data
 
-scanner = serial.Serial('COM10',9600)
+scanner = serial.Serial('COM9',9600)
 
 resource_string = 'USB0::0x0AAD::0x01D6::201033::INSTR'  # USB-TMC (Test and Measurement Class)
 
@@ -35,12 +35,12 @@ rtb.write_str("CHAN1:OFFS 0.0")  # Offset 0
 rtb.write_str("CHAN1:COUP DCL")  # Coupling AC 1MOhm
 rtb.write_str("CHAN1:STAT ON")  # Switch Channel 1 ON
 
-rtb.write_str("CHAN2:RANG 10.0")  # Horizontal range 5V (0.5V/div)
+rtb.write_str("CHAN2:RANG 2.0")  # Horizontal range 5V (0.5V/div)
 rtb.write_str("CHAN2:OFFS 0.0")  # Offset 0
 rtb.write_str("CHAN2:COUP ACL")  # Coupling AC 1MOhm
 rtb.write_str("CHAN2:STAT ON")  # Switch Channel 2 ON
 
-rtb.write_str("CHAN3:RANG 10.0")  # Horizontal range 5V (0.5V/div)
+rtb.write_str("CHAN3:RANG 2.0")  # Horizontal range 5V (0.5V/div)
 rtb.write_str("CHAN3:OFFS 0.0")  # Offset 0
 rtb.write_str("CHAN3:COUP ACL")  # Coupling AC 1MOhm
 rtb.write_str("CHAN3:STAT ON")  # Switch Channel 2 ON
@@ -101,3 +101,4 @@ np.save(filename, data)
 print("data saved")
 rtb.close()
 map_data(filename)
+

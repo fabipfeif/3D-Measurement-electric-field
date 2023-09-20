@@ -94,3 +94,4 @@ def filter_data(sample):
     hilbert_transformed = hilbert(filteredBandPass)
 
     return  np.asarray(np.abs(hilbert_transformed))
+# map_data("16_28_00.npy")
