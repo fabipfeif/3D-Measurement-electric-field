@@ -64,7 +64,9 @@ def map_data(data):
 
         for channels in range(0, len(data[1])):
             fltr = filter_data(data[positions][channels])
-            amp = np.average(fltr) #avergae of hilber-tranformation
+            # amp = np.average(fltr) #avergae of hilber-tranformation
+            fltr_without_edges = fltr[1000:-1000]
+            amp = np.max(fltr_without_edges)-np.min(fltr_without_edges)
             pos[channels] = amp
 
         field_amp = np.sqrt(np.square(pos[0])+np.square(pos[1]))
@@ -94,4 +96,4 @@ def filter_data(sample):
     hilbert_transformed = hilbert(filteredBandPass)
 
     return  np.asarray(np.abs(hilbert_transformed))
-# map_data("16_28_00.npy")
+map_data("16_46_58.npy")

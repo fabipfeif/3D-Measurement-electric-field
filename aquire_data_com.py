@@ -16,7 +16,9 @@ scanner = serial.Serial('COM9',9600)
 
 resource_string = 'USB0::0x0AAD::0x01D6::201033::INSTR'  # USB-TMC (Test and Measurement Class)
 
-rtb = RsInstrument(resource_string, True, False)
+rtb = RsInstrument(resource_string,True, False)
+
+rtb.visa_timeout = 20000
   
 idn = rtb.query_str('*IDN?')
 print(f"\nHello, I am: '{idn}'")
@@ -35,12 +37,12 @@ rtb.write_str("CHAN1:OFFS 0.0")  # Offset 0
 rtb.write_str("CHAN1:COUP DCL")  # Coupling AC 1MOhm
 rtb.write_str("CHAN1:STAT ON")  # Switch Channel 1 ON
 
-rtb.write_str("CHAN2:RANG 2.0")  # Horizontal range 5V (0.5V/div)
+rtb.write_str("CHAN2:RANG 5.0")  # Horizontal range 5V (0.5V/div)
 rtb.write_str("CHAN2:OFFS 0.0")  # Offset 0
 rtb.write_str("CHAN2:COUP ACL")  # Coupling AC 1MOhm
 rtb.write_str("CHAN2:STAT ON")  # Switch Channel 2 ON
 
-rtb.write_str("CHAN3:RANG 2.0")  # Horizontal range 5V (0.5V/div)
+rtb.write_str("CHAN3:RANG 5.0")  # Horizontal range 5V (0.5V/div)
 rtb.write_str("CHAN3:OFFS 0.0")  # Offset 0
 rtb.write_str("CHAN3:COUP ACL")  # Coupling AC 1MOhm
 rtb.write_str("CHAN3:STAT ON")  # Switch Channel 2 ON
