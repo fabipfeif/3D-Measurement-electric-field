@@ -5,6 +5,7 @@
 
 from RsInstrument import *
 from time import time
+from time import sleep
 import numpy as np
 import matplotlib.pyplot as plt
 import serial
@@ -31,7 +32,7 @@ print(f'Instrument installed options: {",".join(rtb.instrument_options)}')
 # rtb.reset()
 
 rtb.write_str("ACQ:POIN 100000") # 100k samples
-rtb.write_str("TIM:ACQT 0.1")  # 100ms Acquisition time
+rtb.write_str("TIM:ACQT 0.02")  # 20ms Acquisition time
 rtb.write_str("CHAN1:RANG 5.0")  # Horizontal range 5V (0.5V/div)
 rtb.write_str("CHAN1:OFFS 0.0")  # Offset 0
 rtb.write_str("CHAN1:COUP DCL")  # Coupling AC 1MOhm
@@ -50,7 +51,7 @@ rtb.write_str("CHAN3:STAT ON")  # Switch Channel 2 ON
 rtb.write_str("TRIG:A:MODE NORM")  # Trigger Auto mode in case of no signal is applied
 rtb.write_str("TRIG:A:TYPE EDGE;:TRIG:A:EDGE:SLOP POS")  # Trigger type Edge Positive
 rtb.write_str("TRIG:A:SOUR CH1")  # Trigger source CH1
-rtb.write_str("TRIG:A:LEV1 1.6")  # Trigger level 0.00V
+rtb.write_str("TRIG:A:LEV1 1.0")  # Trigger level 0.00V
 rtb.query_opc()  # Using *OPC? query waits until all the instrument settings are finished
 
 # rtb.write_str("SING")
@@ -68,9 +69,11 @@ def aquire_data():
     # trace = rtb.query_bin_or_ascii_float_list('FORM ASC;:CHAN1:DATA?')  # Query ascii array of floats
     #print(f'Instrument returned {len(trace1)} points in the binary trace, query duration {time() - t:.3f} secs')
     return np.array([trace2,trace3])
+        
 
 def send_move():
     scanner.write(b'\x03')
+        #input("   \n connection successfull, press ENTER to continue... \n      ")
     while(True):
         b = scanner.read(1)
         if b == b'\x03':
@@ -90,6 +93,7 @@ def run_measurement():
     data = np.asarray(data)
     return data
 
+
 try:
     data = run_measurement()
     #print("Shape of array: "+data.shape)
@@ -102,5 +106,8 @@ print("save data to "+filename+"...")
 np.save(filename, data)
 print("data saved")
 rtb.close()
-map_data(filename)
+
+
+fig = map_data(filename)
+plt.show()
 

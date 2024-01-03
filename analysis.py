@@ -4,7 +4,10 @@ from scipy import signal
 from scipy.signal import hilbert
 from mpl_toolkits.mplot3d import Axes3D
 from progress.bar import Bar
-sampleRate = 1000000 #1MS/s
+sampleRate = 5000000 #1MS/s
+carrier_freq = 34.5e3
+band_low = 30e3
+band_high = 40e3
 
 
 
@@ -64,9 +67,12 @@ def map_data(data):
 
         for channels in range(0, len(data[1])):
             fltr = filter_data(data[positions][channels])
-            amp = np.average(fltr) #avergae of hilber-tranformation
-            fltr_without_edges = fltr[1000:-1000]
-            #amp = np.max(fltr_without_edges)-np.min(fltr_without_edges) ##use this for the temp interference analysis
+            #amp = np.average(fltr) #avergae of hilber-tranformation
+            fltr_without_edges = fltr[20000:-20000]
+            # plt.plot(data[positions][channels][20000:-20000])
+            # plt.plot(fltr_without_edges)
+            # plt.show()
+            amp = np.max(fltr_without_edges)-np.min(fltr_without_edges) ##use this for the temp interference analysis
             pos[channels] = amp
 
         field_amp = np.sqrt(np.square(pos[0])+np.square(pos[1]))
@@ -82,20 +88,20 @@ def map_data(data):
 
     return fig
 
-    # fig=plt.figure()
-    # plt.plot(y_global)
-    # plt.plot(np.array(field_amp_global)*30)
-    # plt.show()
-
+  
 
 def filter_data(sample):
     #sample = data[0][0]
     #times = np.arange(len(sample))/sampleRate
-    b, a = signal.butter(3, [.065, .073], 'band') #carrier frequency at 0.069
+    b, a = signal.butter(3, [band_low/(sampleRate/2), band_high/(sampleRate/2)], 'band') #carrier frequency at 0.069
     filteredBandPass = signal.filtfilt(b, a, sample)
-    hilbert_transformed = hilbert(filteredBandPass)
+    #return filteredBandPass
+    hilbert_transformed = np.abs(hilbert(filteredBandPass))
 
-    return  np.asarray(np.abs(hilbert_transformed))
+    c,d = signal.butter(3,[200/(sampleRate/2)],'low')
+    hilbert_transformed_2 = signal.filtfilt(c,d,hilbert_transformed)
 
-# fig = map_data("17_22_49.npy")
+    return  np.asarray(hilbert_transformed_2)
+
+# fig = map_data("12_42_07.npy")
 # plt.show()
