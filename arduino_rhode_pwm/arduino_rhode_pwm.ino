@@ -8,6 +8,8 @@ const int stepPin = 5;
 
 const int trig_pin = 6;
 
+int init_v = 0;
+
 //const int enable_pin = 11;
 //const int ms1_pin = 10;
 //const int ms2_pin = 9;
@@ -64,6 +66,20 @@ bool run_plate() {
   return true;
 }
 
+bool init_f() {
+  //return true;
+  while (true) {
+    if (Serial.available() > 0) {
+      // read the incoming bytes:
+      int8_t x = Serial.read();
+      if (x == 3) {
+        return true;
+      }
+    }
+  }
+}
+
+
 bool confirmed() {
   //return true;
   while (true) {
@@ -78,6 +94,10 @@ bool confirmed() {
 }
 
 void loop() {
+  // if(init_v == 0){
+  //   init_f;
+  //   init_v = 1;
+  // }
   for (int j = 0; j < 37; j++)
   { //spin probe
     for (int x = 0; x < 50; x++) //spin probe
