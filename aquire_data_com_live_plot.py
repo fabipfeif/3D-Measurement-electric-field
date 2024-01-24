@@ -153,9 +153,9 @@ def run_measurement(r):
     
     
     while (len(data) < num_steps):
-        if send_move():
+        if True:
             print("position: " + str(len(data)), end='\r')
-            bar.next()
+            #bar.next()
             point = aquire_data()
             data.append(point)
 
@@ -178,7 +178,8 @@ def run_measurement(r):
 
             fig.canvas.draw_idle()
             plt.pause(0.05)
-
+        while(not send_move()):
+            pass
 
     bar.finish()
     data = np.asarray(data)

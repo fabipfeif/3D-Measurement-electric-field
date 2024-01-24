@@ -10,21 +10,8 @@ const int trig_pin = 6;
 
 int init_v = 0;
 
-//const int enable_pin = 11;
-//const int ms1_pin = 10;
-//const int ms2_pin = 9;
-//const int ms3_pin = 8;
 
 void setup() {
-//  pinMode(enable_pin,OUTPUT); 
-//  pinMode(ms1_pin,OUTPUT);
-//  pinMode(ms2_pin,OUTPUT);
-//  pinMode(ms3_pin,OUTPUT);
-//
-//  digitalWrite(enable_pin, LOW);
-//  digitalWrite(ms1_pin, LOW);
-//  digitalWrite(ms2_pin, LOW);
-//  digitalWrite(ms3_pin, LOW);
 
   
   Serial.begin(9600);
@@ -93,6 +80,20 @@ bool confirmed() {
   }
 }
 
+bool reset_to_zero(){
+    digitalWrite(dirPin, !digitalRead(dirPin));
+    for (int j = 0; j < 37; j++)
+  { //spin probe
+    run_plate();
+  }
+   for (int x = 0; x < 50; x++) //spin probe
+    {   run_probe();
+    }
+  digitalWrite(dirPin_2, !digitalRead(dirPin_2));
+  digitalWrite(dirPin, !digitalRead(dirPin));
+  return true;
+}
+
 void loop() {
   // if(init_v == 0){
   //   init_f;
@@ -114,5 +115,6 @@ void loop() {
     run_plate();
   }
 
-  while (1);
+  reset_to_zero();
+
 }

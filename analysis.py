@@ -12,8 +12,9 @@ band_high = 40e3
 
 
 def map_data(data):
-    print("open file...")
-    data = np.load(data)
+    if type(data) == str:
+        print("open file...")
+        data = np.load(data)
     print("file opened")
     steps_plate = 37
     steps_probe = 50
@@ -65,14 +66,15 @@ def map_data(data):
     
         pos = np.zeros([2])
 
-        for channels in range(0, len(data[1])):
+        for channels in range(0, len(data[0])): #1
             fltr = filter_data(data[positions][channels])
-            #amp = np.average(fltr) #avergae of hilber-tranformation
+            amp = np.mean(fltr) #avergae of hilber-tranformation
             fltr_without_edges = fltr[20000:-20000]
+            amp = np.mean(fltr_without_edges)
             # plt.plot(data[positions][channels][20000:-20000])
             # plt.plot(fltr_without_edges)
             # plt.show()
-            amp = np.max(fltr_without_edges)-np.min(fltr_without_edges) ##use this for the temp interference analysis
+            #amp = np.max(fltr_without_edges)-np.min(fltr_without_edges) ##use this for the temp interference analysis
             pos[channels] = amp
 
         field_amp = np.sqrt(np.square(pos[0])+np.square(pos[1]))
@@ -83,7 +85,7 @@ def map_data(data):
     #print(field_amp_global)
     fig=plt.figure()
     ax = plt.axes(projection='3d')
-    p = ax.scatter3D(x_global, y_global, z_global, c=field_amp_global, cmap='coolwarm');
+    p = ax.scatter3D(x_global[:len(data)], y_global[:len(data)], z_global[:len(data)], c=field_amp_global, cmap='coolwarm');
     fig.colorbar(p)
 
     return fig
@@ -103,5 +105,5 @@ def filter_data(sample):
 
     return  np.asarray(hilbert_transformed_2)
 
-# fig = map_data("12_42_07.npy")
+# fig = map_data("14_25_28.npy")
 # plt.show()
