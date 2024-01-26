@@ -70,11 +70,11 @@ def map_data(data):
             fltr = filter_data(data[positions][channels])
             amp = np.mean(fltr) #avergae of hilber-tranformation
             fltr_without_edges = fltr[20000:-20000]
-            amp = np.mean(fltr_without_edges)
+            #amp = np.mean(fltr_without_edges) #use this for singl coil analysis
             # plt.plot(data[positions][channels][20000:-20000])
             # plt.plot(fltr_without_edges)
             # plt.show()
-            #amp = np.max(fltr_without_edges)-np.min(fltr_without_edges) ##use this for the temp interference analysis
+            amp = np.max(fltr_without_edges)-np.min(fltr_without_edges) ##use this for the temp interference analysis
             pos[channels] = amp
 
         field_amp = np.sqrt(np.square(pos[0])+np.square(pos[1]))
@@ -105,5 +105,5 @@ def filter_data(sample):
 
     return  np.asarray(hilbert_transformed_2)
 
-# fig = map_data("14_25_28.npy")
+# fig = map_data("13_21_05.npy")
 # plt.show()
