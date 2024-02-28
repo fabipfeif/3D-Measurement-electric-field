@@ -5,18 +5,19 @@ import matplotlib as mpl
 from scipy import signal
 import time
 from datetime import datetime
+import os
 
 from stepper_controller import StepperController
 from oscilloscope_controller import OscilloscopeController
-from analyse_offline import load
 
 # if true, the extend of modulation will be measured (max-min of signal envelope),
 # otherwise, only the signal amplitude is measured
-radius = 40 #mm
+radius = float(input("radius of probe: ")) #mm
 
-signal_modulated = True
+signal_modulated = eval(input("Modulated Signal [True,False]: "))
 simulation = False
 
+print(type(signal_modulated), signal_modulated)
 carrier_frequency = 34.6e3  # Hz
 envelope_filter_cutoff = 200  # Hz
 
@@ -47,13 +48,23 @@ envelope_filter = signal.butter(
 #####
 
 if __name__ == '__main__':
+    path = input("Folder to save data to: ")
+    if os.path.exists(path):
+        print("Folder found")
+    else:
+        os.makedirs(path)
+        print("Folder generated")
 
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     sc = ax.scatter([], [], [])  # , c=field_amp_global, cmap='coolwarm')
+    
+    amp_fac = 1
+    if not signal_modulated:
+        amp_fac = 0.85
 
     color_converter = cm.ScalarMappable(
-        norm=mpl.colors.Normalize(vmin=0, vmax=0.1 * (radius/80)), cmap=cm.coolwarm)
+        norm=mpl.colors.Normalize(vmin=0, vmax=amp_fac*0.1 * (radius/80)), cmap=cm.coolwarm)
 
     ax.set_xlim([-radius-10, radius+10])
     ax.set_ylim([-radius-10, radius+10])
@@ -68,6 +79,12 @@ if __name__ == '__main__':
     z_global = []
 
     amp_global = []
+
+    amp0_global = []
+    amp1_global = []
+    theta_global = []
+    phi_global = []
+
 
     for i in range(steppers.plate_num_steps):
 
@@ -108,10 +125,15 @@ if __name__ == '__main__':
                 radius*np.sin(np.deg2rad(steppers.theta))*np.sin(np.deg2rad(steppers.phi)))
             z_global.append(radius*np.cos(np.deg2rad(steppers.theta)))
 
+            amp0_global.append(pos[0])
+            amp1_global.append(pos[1])
+            theta_global.append(steppers.theta)
+            phi_global.append(steppers.phi)
+
             sc._offsets3d = (x_global, y_global, z_global)
             sc._facecolors = color_converter.to_rgba(amp_global)
 
-            print("theta: ",steppers.theta, "phi: ",steppers.phi, "amplitude: ",amp_global[-1],end='\r')
+            print("theta: %0.3f"%steppers.theta, "phi: %0.3f"%steppers.phi, "amplitude: %0.3f"%amp_global[-1], end='\r')
 
             fig.canvas.draw_idle()
             plt.pause(0.05)
@@ -124,5 +146,5 @@ if __name__ == '__main__':
     filename = str(now.strftime("%H:%M:%S")+'_radius_' +
                str(radius)+'.npy').replace(':', '_')
     
-    np.save(filename, np.asarray([x_global,y_global,z_global, amp_global]))
+    np.save(os.path.join(path,filename), np.asarray([x_global, y_global, z_global, amp_global,amp0_global, amp1_global, theta_global, phi_global]))
     print("data_saved.")
