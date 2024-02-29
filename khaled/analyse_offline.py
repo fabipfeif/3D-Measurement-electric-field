@@ -11,6 +11,8 @@ def plot(path, resolution=10, x_dir=True):  # if x_dir is true, it slices the pl
     z_global = []
     amp_global = []
 
+    color_max = 0.1
+
     data_files = [f for f in os.listdir(path) if f.endswith('.npy')]
 
     for i in range(0, len(data_files)):
@@ -53,7 +55,7 @@ def plot(path, resolution=10, x_dir=True):  # if x_dir is true, it slices the pl
             interpolated_values = interfunc(
                 np.column_stack((X1, Y1.flatten(), Z1.flatten())))
 
-            ax.scatter(Y1, Z1, c=interpolated_values, cmap='coolwarm')
+            ax.scatter(Y1, Z1, c=interpolated_values, cmap='coolwarm',vmax = color_max)
         else:
             X_l = np.arange(-80, 80, 1, dtype=int)
             Z_l = np.arange(0, 80, 1, dtype=int)
@@ -66,15 +68,15 @@ def plot(path, resolution=10, x_dir=True):  # if x_dir is true, it slices the pl
             interpolated_values = interfunc(
                 np.column_stack((X1.flatten(), Y1, Z1.flatten())))
 
-            ax.scatter(X1, Z1, c=interpolated_values, cmap='coolwarm')
+            ax.scatter(X1, Z1, c=interpolated_values, cmap='coolwarm',vmax = color_max)
 
         if x_dir:
-            ax.set_title("X = " + str(depth) + " mm")
+            ax.set_title("X = " + str(depth) + " mm",fontsize= 10)
         else:
-            ax.set_title("Y = " + str(depth) + " mm")
+            ax.set_title("Y = " + str(depth) + " mm",fontsize= 10)
 
         # plot settings for the subplot
-        print(depth, " mm")
+        print("interpolating at [mm]: ", depth, "          ", end="\r")
         ax.set_ylim(0, 80)
         ax.set_xlim(-80, 80)
         ax.set_yticks([20, 40, 60, 80])
