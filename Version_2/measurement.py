@@ -12,12 +12,17 @@ from oscilloscope_controller import OscilloscopeController
 
 # if true, the extend of modulation will be measured (max-min of signal envelope),
 # otherwise, only the signal amplitude is measured
-radius = float(input("radius of probe: ")) #mm
+radius = float(input("radius of probe [mm]: "))  # mm
 
-signal_modulated = eval(input("Modulated Signal [True,False]: "))
+n_coils = int(input("Number of coils: "))
+
+if n_coils == 1:
+    signal_modulated = False
+else:
+    signal_modulated = True
+
 simulation = False
 
-print(type(signal_modulated), signal_modulated)
 carrier_frequency = 34.6e3  # Hz
 envelope_filter_cutoff = 200  # Hz
 
@@ -58,7 +63,7 @@ if __name__ == '__main__':
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     sc = ax.scatter([], [], [])  # , c=field_amp_global, cmap='coolwarm')
-    
+
     amp_fac = 1
     if not signal_modulated:
         amp_fac = 1
@@ -85,17 +90,15 @@ if __name__ == '__main__':
     theta_global = []
     phi_global = []
 
-
     for i in range(steppers.plate_num_steps):
 
         for j in range(steppers.probe_num_steps):
-            if not( i == 0 and j == 0):
+            if not (i == 0 and j == 0):
 
                 if j == 0 and i != 0:
                     steppers.rotate_plate_clkwise()
-                
 
-                elif i % 2 == 0 :
+                elif i % 2 == 0:
                     steppers.rotate_probe_clkwise()
                 else:
                     steppers.rotate_probe_anti_clkwise()
@@ -133,18 +136,19 @@ if __name__ == '__main__':
             sc._offsets3d = (x_global, y_global, z_global)
             sc._facecolors = color_converter.to_rgba(amp_global)
 
-            print("theta: %0.3f"%steppers.theta, "phi: %0.3f"%steppers.phi, "amplitude: %0.3f"%amp_global[-1], end='\r')
+            print("theta: %0.3f" % steppers.theta, "phi: %0.3f" %
+                  steppers.phi, "amplitude: %0.3f" % amp_global[-1], end='\r')
 
             fig.canvas.draw_idle()
             plt.pause(0.05)
 
             time.sleep(delay)
-        
 
     now = datetime.now()
 
     filename = str(now.strftime("%H:%M:%S")+'_radius_' +
-               str(radius)+'.npy').replace(':', '_')
-    
-    np.save(os.path.join(path,filename), np.asarray([x_global, y_global, z_global, amp_global,amp0_global, amp1_global, theta_global, phi_global]))
+                   str(radius)+'.npy').replace(':', '_')
+
+    np.save(os.path.join(path, filename), np.asarray(
+        [x_global, y_global, z_global, amp_global, amp0_global, amp1_global, theta_global, phi_global]))
     print("data_saved.")
