@@ -89,7 +89,7 @@ def calc_coordinates(r):
     y_global = []
     z_global = []
 
-    theta = np.linspace(90, -90, steps_probe)
+    theta = np.linspace(-90, 90, steps_probe)
 
     for j in range(0, steps_plate):
         for o in range(steps_probe):
@@ -131,7 +131,7 @@ def run_measurement(r):
     ax = plt.axes(projection='3d')
     sc = ax.scatter([], [], [])  # , c=field_amp_global, cmap='coolwarm')
     color_converter = cm.ScalarMappable(
-        norm=mpl.colors.Normalize(vmin=0, vmax=0.1), cmap=cm.coolwarm)
+        norm=mpl.colors.Normalize(vmin=0, vmax=0.07), cmap=cm.coolwarm)
 
     ax.set_xlim([-r-10, r+10])
     ax.set_ylim([-r-10, r+10])
@@ -152,8 +152,8 @@ def run_measurement(r):
             fltr = filter_data(point[channels])
             # amp = np.mean(fltr) #avergae of hilber-tranformation
             fltr_without_edges = fltr[20000:-20000]
-            # amp = np.mean(fltr_without_edges) #avergae of hilber-tranformation
-            amp = np.max(fltr_without_edges)-np.min(fltr_without_edges) # use this for the temp interference analysis
+            amp = np.mean(fltr_without_edges) #avergae of hilber-tranformation
+            #amp = np.max(fltr_without_edges)-np.min(fltr_without_edges) # use this for the temp interference analysis
             pos[channels] = amp
 
         field_amp = np.sqrt(np.square(pos[0])+np.square(pos[1]))

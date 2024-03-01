@@ -1,6 +1,6 @@
 // Define pin connections
 const int dirPin_2 = 2;
-const int stepPin_2 = 3; //probe
+const int stepPin_2 = 3;  //probe
 
 const int dirPin = 4;
 const int stepPin = 5;
@@ -10,10 +10,10 @@ const int trig_pin = 6;
 int init_v = 0;
 
 void setup() {
-  
+
   Serial.begin(9600);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    ;  // wait for serial port to connect. Needed for native USB port only
   }
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
@@ -22,9 +22,8 @@ void setup() {
   pinMode(stepPin_2, OUTPUT);
   pinMode(dirPin_2, OUTPUT);
 
-  digitalWrite(dirPin_2, HIGH);
+  digitalWrite(dirPin_2, LOW);
   digitalWrite(dirPin, LOW);
-
 }
 
 bool run_probe() {
@@ -42,11 +41,12 @@ bool run_probe() {
 
 bool run_plate() {
   //Spin plate//
-  for(int i = 0; i <9; i++){
-  digitalWrite(stepPin, HIGH);
-  delayMicroseconds(2000);
-  digitalWrite(stepPin, LOW);
-  delayMicroseconds(2000);}
+  for (int i = 0; i < 9; i++) {
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(2000);
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(2000);
+  }
   return true;
 }
 
@@ -77,21 +77,25 @@ bool confirmed() {
 
 void loop() {
 
-  for (int j = 0; j < 37; j++)
-  { //spin plate
-    for (int x = 0; x < 50; x++) //spin probe
-    { if (confirmed()) {
+  for (int j = 0; j < 37; j++) {  //spin plate
+    for (int x = 0; x < 50; x++)  //spin probe
+    {
+      if (confirmed()) {
         run_probe();
         delay(100);
         Serial.write(3);
         digitalWrite(trig_pin, HIGH);
         delay(1);
-        digitalWrite(trig_pin, LOW); 
+        digitalWrite(trig_pin, LOW);
       }
     }
     digitalWrite(dirPin_2, !digitalRead(dirPin_2));
     run_plate();
+    digitalWrite(trig_pin, HIGH);
+    delay(1);
+    digitalWrite(trig_pin, LOW);
   }
 
-  while (1);
+  while (1)
+    ;
 }
