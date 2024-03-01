@@ -61,7 +61,7 @@ if __name__ == '__main__':
     
     amp_fac = 1
     if not signal_modulated:
-        amp_fac = 0.85
+        amp_fac = 1
 
     color_converter = cm.ScalarMappable(
         norm=mpl.colors.Normalize(vmin=0, vmax=amp_fac*0.1 * (radius/80)), cmap=cm.coolwarm)
