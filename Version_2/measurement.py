@@ -35,7 +35,7 @@ edge_length = 0.05  # edge_length*acquisition_num_samples samples are removed fr
 acquisition_time = 0.02  # seconds
 acquisition_num_samples = 100000
 
-stepper_controller_port = 'COM11'
+stepper_controller_port = 'COM9'
 osc_resource_string = 'USB0::0x0AAD::0x01D6::201033::INSTR'
 
 steppers = StepperController(
@@ -151,4 +151,4 @@ if __name__ == '__main__':
 
     np.save(os.path.join(path, filename), np.asarray(
         [x_global, y_global, z_global, amp_global, amp0_global, amp1_global, theta_global, phi_global]))
-    print("data_saved.")
+    print("data_saved.                                                                       ")

@@ -79,8 +79,8 @@ def plot(path, resolution=10, x_dir=True):  # if x_dir is true, it slices the pl
         print("interpolating at [mm]: ", depth, "          ", end="\r")
         ax.set_ylim(0, 80)
         ax.set_xlim(-80, 80)
-        ax.set_yticks([20, 40, 60, 80])
-        ax.set_xticks(np.arange(-80, 80, 20, dtype=int))
+        ax.set_yticks([20, 40, 60, 80],fontsize = 400)
+        ax.set_xticks(np.arange(-80, 80, 20, dtype=int),fontsize = 400)
         # plt.axis('equal')
         c = c+1
 
@@ -91,4 +91,4 @@ def plot(path, resolution=10, x_dir=True):  # if x_dir is true, it slices the pl
 
 if __name__ == '__main__':
 
-    plot('measurement_1',x_dir=True)
+    plot('single_coil_1',x_dir=True)
