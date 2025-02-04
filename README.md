@@ -1,8 +1,10 @@
-# 3D-Measurement-electric-field
+### 3D-Measurement-electric-field
 
-Version_1: working prototype with live-plotting
+#### Version_1 
+working prototype with live-plotting
 
-Version_2: prametrized and organized Version, which is active working version for measurements
+#### Version_2 
+prametrized and organized Version, which is active working version for measurements
 
 
 example plot of an Electric field:
